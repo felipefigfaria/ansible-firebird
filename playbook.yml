@@ -1,0 +1,8 @@
+---
+- hosts: LINUX
+  roles: 
+    - pacotes
+    - createdir
+    - firebird
+  become: yes
+#teste    

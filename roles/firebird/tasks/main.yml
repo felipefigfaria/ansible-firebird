@@ -1,0 +1,59 @@
+---
+  - name: Adicionar vm.max_map_count ao /etc/sysctl.conf
+    lineinfile:
+      path: /etc/sysctl.conf
+      line: "vm.max_map_count = 256000"
+      state: present
+
+  - name: Aplicar as alterações do sysctl
+    ansible.builtin.command:
+      cmd: sysctl -p /etc/sysctl.conf
+
+  - name: Instalar libncurses5 libtommath1 curl tar libicu-dev
+    ansible.builtin.apt:
+      name:
+        - libncurses5
+        - libtommath1
+        - libicu-dev
+        - curl
+        - tar
+        - libicu-dev
+      state: latest
+    when: ansible_facts['distribution'] == "Ubuntu"
+
+  - name: Instalar libncurses5 libtommath1 curl tar libicu-dev
+    ansible.builtin.yum:
+      name:
+        - libncurses5
+        - libtommath1
+        - libicu-dev
+        - curl
+        - tar
+        - libicu-dev
+      state: latest
+    when: ansible_facts['distribution'] == "Rocky"
+
+  - name: Criar link simbólico
+    ansible.builtin.shell: |
+      TM=libtommath.so;
+      for LIB in `find /lib* /usr/lib* -name ${TM}.1`;
+      do ln -s ${TM}.1 `dirname ${LIB}`/${TM}.0;
+      done;
+      unset TM;
+
+  - name: Download e descompactação arquivo
+    ansible.builtin.shell:
+      cmd: curl -L https://github.com/FirebirdSQL/firebird/releases/download/v3.0.12/Firebird-3.0.12.33787-0.amd64.tar.gz | tar -zxC /tmp
+
+  - name: Rodar o script de instalação do Firebird
+    become: yes
+    ansible.builtin.shell: 
+      cmd: cd /tmp/Firebird-3.0.12.33787-0.amd64/ && yes 'masterkey' | /tmp/Firebird-3.0.12.33787-0.amd64/install.sh
+  
+  - name: Habilitar serviço Firebird
+    ansible.builtin.shell: 
+      cmd: systemctl enable firebird-superserver.service
+
+  - name: Cópia do arquivo security.fdb para backup
+    ansible.builtin.shell:
+      cmd: cp /opt/firebird/security3.fdb /DATABASE/security3_bkp.fdb

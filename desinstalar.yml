@@ -1,0 +1,43 @@
+---
+- name: Desinstalar
+  hosts: LINUX
+  become: yes
+  tasks:
+    - name: Desinstalar libncurses5
+      apt:
+        name: libncurses5
+        state: absent
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+
+    - name: Desinstalar libtommath1
+      apt:
+        name: libtommath1
+        state: absent
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+
+    - name: Desinstalar curl
+      apt:
+        name: curl
+        state: absent
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+
+    - name: Desinstalar libicu-dev
+      apt:
+        name: libicu-dev
+        state: absent        
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+
+    - name: Deletar Firebird
+      ansible.builtin.shell: |
+        rm -rf /tmp/Firebird-3.0.12.33787-0.amd64
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+
+    - name: Desinstalar Firebird
+      ansible.builtin.shell:
+        cmd: cd /opt/firebird/bin && yes 'masterkey' | /opt/firebird/bin/FirebirdUninstall.sh
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+
+    - name: Deletar security3_bkp.fdb
+      ansible.builtin.shell:
+        cmd: rm -rf /DATABASE/security3_bkp.fdb  
+      when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"

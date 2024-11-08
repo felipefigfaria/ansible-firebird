@@ -1,0 +1,7 @@
+---
+  - name: Criar diretório para banco de dados
+    ansible.builtin.file:
+      path: /DATABASE
+      state: directory
+      mode: '0777'
+    when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
