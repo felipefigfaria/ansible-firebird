@@ -3,10 +3,9 @@
     ansible.builtin.apt:
       update_cache: yes
       upgrade: dist
-    when: ansible_facts['distribution'] == "Ubuntu"
+    when: ansible_os_family == "Debian"
 
   - name: Atualizar cache e pacotes no Rocky
     ansible.builtin.yum:
       update_cache: yes
-      upgrade: dist
-    when: ansible_facts['distribution'] == "Rocky"
+    when: ansible_os_family == "RedHat"

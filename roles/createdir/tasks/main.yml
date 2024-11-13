@@ -4,4 +4,4 @@
       path: /DATABASE
       state: directory
       mode: '0777'
-    when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Rocky"
+    when: ansible_os_family in ["Debian", "RedHat"]

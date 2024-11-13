@@ -9,6 +9,13 @@
     ansible.builtin.command:
       cmd: sysctl -p /etc/sysctl.conf
 
+  - name: Instalar repositório necessário para libtommath (Rocky Linux)
+    ansible.builtin.yum:
+      name:
+        - epel-release
+      state: latest
+    when: ansible_os_family == "RedHat"
+
   - name: Instalar libncurses5 libtommath1 curl tar libicu-dev
     ansible.builtin.apt:
       name:
@@ -17,21 +24,24 @@
         - libicu-dev
         - curl
         - tar
-        - libicu-dev
       state: latest
-    when: ansible_facts['distribution'] == "Ubuntu"
+    when: ansible_os_family == "Debian"
+
+  - name: Makecache (Rocky Linux)
+    ansible.builtin.shell: |
+      yum makecache;
+    when: ansible_os_family == "RedHat"
 
   - name: Instalar libncurses5 libtommath1 curl tar libicu-dev
     ansible.builtin.yum:
       name:
-        - libncurses5
-        - libtommath1
-        - libicu-dev
-        - curl
-        - tar
-        - libicu-dev
+        - ncurses
+        - libtommath       
+        - libicu    
+        - curl            
+        - tar 
       state: latest
-    when: ansible_facts['distribution'] == "Rocky"
+    when: ansible_os_family == "RedHat"
 
   - name: Criar link simbólico
     ansible.builtin.shell: |
@@ -40,6 +50,8 @@
       do ln -s ${TM}.1 `dirname ${LIB}`/${TM}.0;
       done;
       unset TM;
+    when: ansible_os_family == "Debian"
+
 
   - name: Download e descompactação arquivo
     ansible.builtin.shell:
@@ -53,7 +65,9 @@
   - name: Habilitar serviço Firebird
     ansible.builtin.shell: 
       cmd: systemctl enable firebird-superserver.service
+    when: ansible_os_family in ["Debian", "RedHat"]
 
   - name: Cópia do arquivo security.fdb para backup
     ansible.builtin.shell:
       cmd: cp /opt/firebird/security3.fdb /DATABASE/security3_bkp.fdb
+    when: ansible_os_family in ["Debian", "RedHat"]      

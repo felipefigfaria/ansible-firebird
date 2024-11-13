@@ -1,0 +1,18 @@
+---
+- name: Instalar
+  hosts: LINUX
+  become: yes
+  tasks:
+    - name: Instalar libncurses5
+      ansible.builtin.apt:
+        name:
+          - libncurses5
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: Instalar libncurses5 
+      ansible.builtin.yum:
+        name:
+          - ncurses-libs
+        state: latest
+      when: ansible_os_family == "RedHat"
