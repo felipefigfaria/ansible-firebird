@@ -35,15 +35,19 @@
   - name: Instalar libncurses5 libtommath1 curl tar libicu-dev
     ansible.builtin.yum:
       name:
-        - ncurses
+        - findutils
+        - ncurses-libs
         - libtommath       
         - libicu    
+        - xz
+        - mc
+        - ncurses-compat-libs
         - curl            
         - tar 
       state: latest
     when: ansible_os_family == "RedHat"
 
-  - name: Criar link simbólico
+  - name: Criar link simbólico Ubuntu
     ansible.builtin.shell: |
       TM=libtommath.so;
       for LIB in `find /lib* /usr/lib* -name ${TM}.1`;
@@ -51,6 +55,11 @@
       done;
       unset TM;
     when: ansible_os_family == "Debian"
+
+  - name: Criar link simbólico Rocky
+    ansible.builtin.shell: |
+      ln -s libtommath.so.1 /lib64/libtommath.so.0
+    when: ansible_os_family == "RedHat"    
 
 
   - name: Download e descompactação arquivo
