@@ -1,9 +1,9 @@
-[LINUX:children]
+[LINUXF:children]
 UBUNTU
 ROCKY
 
 [UBUNTU]
-target-ubuntu ansible_host=10.1.1.35 ansible_user=sig ansible_ssh_private_key_file='/home/sig/ansible-firebird/target-ubuntu'
+target-ubuntu ansible_host=10.1.1.49 ansible_user=sig ansible_ssh_private_key_file='/home/sig/ansible-firebird/target-ubuntu'
 
 [ROCKY]
-target-rocky ansible_host=10.1.1.41 ansible_user=sig ansible_ssh_private_key_file='/home/sig/ansible-firebird/target-rocky'
+target-rocky ansible_host=10.1.1.91 ansible_user=sig ansible_ssh_private_key_file='/home/sig/ansible-firebird/target-rocky'

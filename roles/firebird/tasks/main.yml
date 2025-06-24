@@ -4,10 +4,16 @@
       path: /etc/sysctl.conf
       line: "vm.max_map_count = 256000"
       state: present
+    tags:
+    - debian
+    - redhat
 
   - name: Aplicar as alterações do sysctl
     ansible.builtin.command:
       cmd: sysctl -p /etc/sysctl.conf
+    tags:
+    - debian
+    - redhat
 
   - name: Instalar repositório necessário para libtommath (Rocky Linux)
     ansible.builtin.yum:
@@ -15,6 +21,8 @@
         - epel-release
       state: latest
     when: ansible_os_family == "RedHat"
+    tags:
+    - redhat
 
   - name: Instalar libncurses5 libtommath1 curl tar libicu-dev
     ansible.builtin.apt:
@@ -26,6 +34,8 @@
         - tar
       state: latest
     when: ansible_os_family == "Debian"
+    tags:
+    - debian
 
   - name: Makecache (Rocky Linux)
     ansible.builtin.shell: |
@@ -46,6 +56,8 @@
         - tar 
       state: latest
     when: ansible_os_family == "RedHat"
+    tags:
+    - redhat
 
   - name: Criar link simbólico Ubuntu
     ansible.builtin.shell: |
@@ -55,28 +67,43 @@
       done;
       unset TM;
     when: ansible_os_family == "Debian"
+    tags:
+    - debian
 
   - name: Criar link simbólico Rocky
     ansible.builtin.shell: |
       ln -s libtommath.so.1 /lib64/libtommath.so.0
-    when: ansible_os_family == "RedHat"    
-
+    when: ansible_os_family == "RedHat"
+    tags:
+    - redhat    
 
   - name: Download e descompactação arquivo
     ansible.builtin.shell:
       cmd: curl -L https://github.com/FirebirdSQL/firebird/releases/download/v3.0.12/Firebird-3.0.12.33787-0.amd64.tar.gz | tar -zxC /tmp
+    tags:
+    - debian
+    - redhat
 
   - name: Rodar o script de instalação do Firebird
     become: yes
     ansible.builtin.shell: 
-      cmd: cd /tmp/Firebird-3.0.12.33787-0.amd64/ && yes 'masterkey' | /tmp/Firebird-3.0.12.33787-0.amd64/install.sh
+      cmd: cd /tmp/Firebird-3.0.12.33787-0.amd64/ && yes 'aq857gc6' | /tmp/Firebird-3.0.12.33787-0.amd64/install.sh
+    tags:
+    - debian
+    - redhat
   
   - name: Habilitar serviço Firebird
     ansible.builtin.shell: 
       cmd: systemctl enable firebird-superserver.service
     when: ansible_os_family in ["Debian", "RedHat"]
+    tags:
+    - debian
+    - redhat
 
   - name: Cópia do arquivo security.fdb para backup
     ansible.builtin.shell:
       cmd: cp /opt/firebird/security3.fdb /DATABASE/security3_bkp.fdb
     when: ansible_os_family in ["Debian", "RedHat"]      
+    tags:
+    - debian
+    - redhat
